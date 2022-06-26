@@ -27,6 +27,7 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 
 /*
     >>> Escriba su respuesta a partir de este punto <<<
+*/
 DROP TABLE IF EXISTS t0;
 CREATE TABLE t0 (
     c1 STRING,
@@ -38,15 +39,8 @@ CREATE TABLE t0 (
         COLLECTION ITEMS TERMINATED BY ','
         MAP KEYS TERMINATED BY '#'
         LINES TERMINATED BY '\n';
-LOAD DATA LOCAL INPATH 'pregunta_12/SOURCE/data.tsv' INTO TABLE t0;
+LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 
-SELECT c2, c3 from t0;
-SELECT c2, map_keys(c3) from t0;
-
-SELECT P.C2 ,letra FROM t0 P LATERAL VIEW EXPLODE(map_keys(P.c3)) fv as letra; 
-
-SELECT CONCAT('"',b.letra1,',',b.letra,',',COUNT(b.letra),'",') from (
-SELECT letra1, R.letra from (
-SELECT P.c2 ,letra FROM t0 P LATERAL VIEW EXPLODE(map_keys(P.c3)) fv as letra) R
-LATERAL VIEW EXPLODE(R.c2) fv as letra1) b GROUP BY b.letra1,b.letra;
-
+INSERT OVERWRITE LOCAL DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+Select c1,size(c2),size(map_keys(c3)) from t0;
